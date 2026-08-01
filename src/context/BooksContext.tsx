@@ -98,12 +98,14 @@ interface BooksContextValue {
   deleteBook: (id: string) => Promise<{ error: string | null }>;
   isUserBook: (id: string) => boolean;
   canDelete: (id: string, userId: string | null) => boolean;
+  updateBookCover: (id: string, coverUrl: string) => void;
   refresh: () => Promise<void>;
 }
 
 const BooksContext = createContext<BooksContextValue | null>(null);
 
 const STORAGE_KEY = 'bv-books';
+const COVER_OVERRIDES_KEY = 'bv-book-covers';
 
 function loadLocalBooks(): BookRow[] {
   try {
@@ -118,10 +120,24 @@ function saveLocalBooks(books: BookRow[]) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(books));
 }
 
+function loadCoverOverrides(): Record<string, string> {
+  try {
+    const raw = localStorage.getItem(COVER_OVERRIDES_KEY);
+    return raw ? (JSON.parse(raw) as Record<string, string>) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveCoverOverrides(overrides: Record<string, string>) {
+  localStorage.setItem(COVER_OVERRIDES_KEY, JSON.stringify(overrides));
+}
+
 export function BooksProvider({ children }: { children: ReactNode }) {
   const [userBooks, setUserBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [coverOverrides, setCoverOverrides] = useState<Record<string, string>>(() => loadCoverOverrides());
 
   const refresh = useCallback(async () => {
     const rows = loadLocalBooks();
@@ -204,7 +220,21 @@ export function BooksProvider({ children }: { children: ReactNode }) {
     [userBooks]
   );
 
-  const allBooks = useMemo(() => [...userBooks, ...seedBooks], [userBooks]);
+  const updateBookCover = useCallback((id: string, coverUrl: string) => {
+    setCoverOverrides((prev) => {
+      const next = { ...prev, [id]: coverUrl };
+      saveCoverOverrides(next);
+      return next;
+    });
+  }, []);
+
+  const allBooks = useMemo(() => {
+    const merged = [...userBooks, ...seedBooks].map((b) => ({
+      ...b,
+      cover: coverOverrides[b.id] || b.cover,
+    }));
+    return merged;
+  }, [userBooks, seedBooks, coverOverrides]);
 
   const allGenres = useMemo(
     () => Array.from(new Set([...allBooks.map((b) => b.genre), ...seedGenres])).sort(),
@@ -226,6 +256,7 @@ export function BooksProvider({ children }: { children: ReactNode }) {
     deleteBook,
     isUserBook,
     canDelete,
+    updateBookCover,
     refresh,
   };
 

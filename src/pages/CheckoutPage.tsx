@@ -4,16 +4,18 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Loader2, CreditCard, MapPin, CheckCircle2, Lock } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { useAdmin } from '../context/AdminContext';
+import AdminAuthModal from '../components/AdminAuthModal';
 import { formatPrice } from '../utils/format';
 
 export default function CheckoutPage() {
   const { cart, cartSubtotal, placeOrder, currency } = useStore();
-  const { currency: adminCurrency } = useAdmin();
+  const { currency: adminCurrency, isUser, isAdmin } = useAdmin();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [paystackLoading, setPaystackLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [showSignIn, setShowSignIn] = useState(false);
   const [filled, setFilled] = useState({
     name: false,
     email: false,
@@ -25,6 +27,23 @@ export default function CheckoutPage() {
     cvc: false,
     cardName: false,
   });
+
+  if (!isUser && !isAdmin && cart.length > 0) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-20 text-center">
+        <Lock className="mx-auto text-ink-400" size={56} />
+        <h1 className="font-display text-3xl font-bold mt-4">Sign in to checkout</h1>
+        <p className="text-ink-500/70 dark:text-ink-100/60 mt-2">Please sign in or create an account to complete your purchase.</p>
+        <button
+          onClick={() => setShowSignIn(true)}
+          className="mt-6 inline-flex items-center gap-2 rounded-full bg-brand-500 hover:bg-brand-600 text-white px-6 py-3 font-semibold"
+        >
+          Sign in
+        </button>
+        <AdminAuthModal open={showSignIn} onClose={() => setShowSignIn(false)} />
+      </div>
+    );
+  }
 
   const activeCurrency = adminCurrency || currency;
   const subtotal = cartSubtotal;

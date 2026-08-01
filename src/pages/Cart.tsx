@@ -1,12 +1,17 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRight, Minus, Plus, ShoppingBag, Trash2, CreditCard } from 'lucide-react';
+import { ArrowRight, Minus, Plus, ShoppingBag, Trash2, CreditCard, Lock } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
+import { useAdmin } from '../context/AdminContext';
+import AdminAuthModal from '../components/AdminAuthModal';
 import { formatPrice } from '../utils/format';
 
 export default function Cart() {
   const { cart, updateQty, removeFromCart, clearCart, cartSubtotal, currency } = useStore();
   const navigate = useNavigate();
+  const { isUser, isAdmin } = useAdmin();
+  const [showSignIn, setShowSignIn] = useState(false);
 
   const tax = cartSubtotal * 0.08;
   const shipping = cartSubtotal >= 50 ? 0 : 4.99;
@@ -15,6 +20,10 @@ export default function Cart() {
 
   const handlePlaceOrder = () => {
     if (cart.length === 0) return;
+    if (!isUser && !isAdmin) {
+      setShowSignIn(true);
+      return;
+    }
     navigate('/checkout');
   };
 
@@ -91,9 +100,12 @@ export default function Cart() {
             disabled={cart.length === 0}
             className="mt-5 w-full rounded-full bg-brand-500 hover:bg-brand-600 disabled:opacity-60 text-white py-3 font-semibold shadow-lg shadow-brand-500/30 flex items-center justify-center gap-2 neon-glow"
           >
-            <CreditCard size={18} /> Place Order
+            {(isUser || isAdmin) ? <CreditCard size={18} /> : <Lock size={18} />}
+            {(isUser || isAdmin) ? 'Place Order' : 'Sign in to Order'}
           </button>
         </aside>
+
+        <AdminAuthModal open={showSignIn} onClose={() => setShowSignIn(false)} />
       </div>
     </div>
   );

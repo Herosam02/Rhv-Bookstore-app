@@ -2,7 +2,7 @@ import { useMemo, useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   BookCopy, BookPlus, CheckCircle2, DollarSign, LayoutDashboard,
-  Loader2, LogOut, Pencil, Save, Search, Settings2, ShoppingCart, Trash2, TrendingUp, Upload, ShieldCheck, User,
+  Loader2, LogOut, Pencil, Save, Search, Settings2, ShoppingCart, Trash2, TrendingUp, Upload, ShieldCheck,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useBooks } from '../context/BooksContext';
@@ -15,7 +15,7 @@ import { classNames, formatPrice } from '../utils/format';
 type Tab = 'overview' | 'books' | 'orders' | 'settings';
 
 export default function Admin() {
-  const { isAdmin, ready, signOut, currency, setCurrency, userCount } = useAdmin();
+  const { isAdmin, ready, signOut, currency, setCurrency } = useAdmin();
   const { books, deleteBook } = useBooks();
   const { notify, orders } = useStore();
   const navigate = useNavigate();
@@ -163,7 +163,6 @@ export default function Admin() {
                   <StatCard icon={TrendingUp} label="Limited" value={String(stats.limited)} color="amber" />
                   <StatCard icon={ShoppingCart} label="Total Orders" value={String(stats.orderCount)} color="brand" />
                   <StatCard icon={DollarSign} label="Revenue" value={formatPrice(stats.totalRevenue, currency)} color="emerald" />
-                  <StatCard icon={User} label="Total Users" value={String(userCount)} color="brand" />
                 </div>
 
                 <div className="rounded-2xl border border-black/5 dark:border-white/10 overflow-hidden">
@@ -432,7 +431,7 @@ function AdminBookRow({
   onClose: () => void;
   currency: string;
 }) {
-  const { updateBook } = useBooks();
+  const { updateBook, updateBookCover, isUserBook } = useBooks();
   const { uploadImage } = useAdmin();
   const { notify } = useStore();
   const [form, setForm] = useState({
@@ -448,6 +447,10 @@ function AdminBookRow({
 
   const save = async () => {
     setSaving(true);
+    const isSeed = !isUserBook(book.id);
+    if (isSeed) {
+      updateBookCover(book.id, cover);
+    }
     const { error } = await updateBook(book.id, {
       title: form.title.trim(),
       author: form.author.trim(),
@@ -455,7 +458,7 @@ function AdminBookRow({
       genre: form.genre,
       description: form.description.trim(),
       availability: form.availability,
-      cover,
+      cover: isSeed ? undefined : cover,
     });
     setSaving(false);
     if (error) notify(error, 'error');
@@ -469,7 +472,12 @@ function AdminBookRow({
     if (!file) return;
     setSaving(true);
     const url = await uploadImage(file, `book-cover-${book.id}-${Date.now()}`);
-    if (url) setCover(url);
+    if (url) {
+      setCover(url);
+      if (!isUserBook(book.id)) {
+        updateBookCover(book.id, url);
+      }
+    }
     setSaving(false);
   };
 

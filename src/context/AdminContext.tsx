@@ -36,7 +36,7 @@ interface AdminContextValue {
   refresh: () => Promise<void>;
   currency: string;
   setCurrency: (currency: string) => void;
-  userCount: number;
+  adminCount: number;
 }
 
 const ADMIN_EMAIL = 'admin3333878@gmail.com';
@@ -65,15 +65,11 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<AuthUser | null>(null);
   const [overrides, setOverrides] = useState<OverrideMap>({});
   const [currency, setCurrencyState] = useState<string>(() => localStorage.getItem('bv-currency') || 'USD');
-  const [userCount, setUserCount] = useState<number>(() => Object.keys(getUsers()).length);
 
   const isAdmin = session?.role === 'admin';
   const isUser = session?.role === 'user';
   const user = session;
-
-  const refreshUserCount = useCallback(() => {
-    setUserCount(Object.keys(getUsers()).length);
-  }, []);
+  const adminCount = isAdmin ? 1 : 0;
 
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_SESSION);
@@ -92,9 +88,8 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem(STORAGE_SESSION);
       }
     }
-    refreshUserCount();
     setReady(true);
-  }, [refreshUserCount]);
+  }, []);
 
   const setCurrency = useCallback((cur: string) => {
     setCurrencyState(cur);
@@ -137,12 +132,11 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     }
     users[trimmed] = password;
     saveUsers(users);
-    refreshUserCount();
     const s: AuthUser = { email: trimmed, role: 'user' };
     setSession(s);
     localStorage.setItem(STORAGE_SESSION, JSON.stringify(s));
     return { error: null };
-  }, [refreshUserCount]);
+  }, []);
 
   const signOut = useCallback(() => {
     setSession(null);
@@ -266,9 +260,9 @@ export function AdminProvider({ children }: { children: ReactNode }) {
       refresh,
       currency,
       setCurrency,
-      userCount,
+      adminCount,
     }),
-    [ready, isAdmin, isUser, user, signIn, signUp, signOut, forgotPassword, resetPassword, overrides, resolveValue, saveDraft, publish, revert, uploadImage, refresh, currency, setCurrency, userCount]
+    [ready, isAdmin, isUser, user, signIn, signUp, signOut, forgotPassword, resetPassword, overrides, resolveValue, saveDraft, publish, revert, uploadImage, refresh, currency, setCurrency, adminCount]
   );
 
   return <AdminContext.Provider value={value}>{children}</AdminContext.Provider>;
