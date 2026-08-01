@@ -17,7 +17,7 @@ export default function NotFound() {
         <h1 className="mt-6 font-display text-7xl font-bold gradient-text">404</h1>
         <p className="font-display text-xl font-semibold mt-2">This page is off the shelf.</p>
         <p className="text-sm text-ink-500/70 dark:text-ink-100/60 mt-2">The page you were looking for doesn't exist or has moved.</p>
-        <Link to="/" className="inline-flex items-center gap-2 mt-6 rounded-full bg-brand-500 hover:bg-brand-600 text-white px-6 py-3 font-semibold">
+        <Link to="/home" className="inline-flex items-center gap-2 mt-6 rounded-full bg-brand-500 hover:bg-brand-600 text-white px-6 py-3 font-semibold">
           <Home size={16} /> Back home
         </Link>
       </div>

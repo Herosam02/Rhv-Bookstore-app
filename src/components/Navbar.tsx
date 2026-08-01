@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { BookOpen, Heart, LayoutDashboard, LayoutGrid, LineChart, Menu, Moon, Plus, Shield, ShieldCheck, ShoppingCart, Sun, X } from 'lucide-react';
+import { BookOpen, Heart, LayoutDashboard, LayoutGrid, LineChart, LogOut, Menu, Moon, Plus, Shield, ShieldCheck, ShoppingCart, Sun, X } from 'lucide-react';
 import SearchBar from './SearchBar';
 import AdminAuthModal from './AdminAuthModal';
 import AddBookModal from './AddBookModal';
@@ -12,7 +12,7 @@ import { genres as seedGenres } from '../data/books';
 import { classNames } from '../utils/format';
 
 const NAV = [
-  { label: 'Home', to: '/' },
+  { label: 'Home', to: '/home' },
   { label: 'Explore', to: '/explore' },
   { label: 'Categories', to: '/categories' },
   { label: 'Tracker', to: '/tracker' },
@@ -21,7 +21,7 @@ const NAV = [
 
 export default function Navbar() {
   const { dark, toggleTheme, cartCount, wishlist } = useStore();
-  const { isAdmin } = useAdmin();
+  const { isAdmin, isUser, signOut } = useAdmin();
   const { genres: liveGenres } = useBooks();
   const genres = liveGenres.length ? liveGenres : seedGenres;
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -45,7 +45,7 @@ export default function Navbar() {
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center gap-3">
-            <Link to="/" className="flex items-center gap-2 shrink-0">
+            <Link to="/home" className="flex items-center gap-2 shrink-0">
               <div className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-white shadow-lg shadow-brand-500/30">
                 <BookOpen size={18} />
               </div>
@@ -138,8 +138,17 @@ export default function Navbar() {
                 )}
               >
                 {isAdmin ? <ShieldCheck size={16} /> : <Shield size={16} />}
-                <span className="hidden sm:inline">{isAdmin ? 'Admin' : 'Admin'}</span>
+                <span className="hidden sm:inline">{isAdmin ? 'Admin' : isUser ? 'Account' : 'Admin'}</span>
               </button>
+              {isUser && !isAdmin && (
+                <button
+                  onClick={() => signOut()}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-rose-500 hover:bg-rose-600 text-white px-3 h-9 text-sm font-semibold"
+                >
+                  <LogOut size={16} />
+                  <span className="hidden sm:inline">Sign out</span>
+                </button>
+              )}
               <button
                 onClick={toggleTheme}
                 aria-label="Toggle theme"
