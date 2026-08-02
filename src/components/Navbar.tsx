@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { BookOpen, Heart, LayoutDashboard, LayoutGrid, LineChart, LogOut, Menu, Moon, Plus, ShoppingCart, Sun, X } from 'lucide-react';
+import { BookOpen, Heart, LayoutDashboard, LayoutGrid, LineChart, LogOut, Menu, Moon, Plus, Shield, ShoppingCart, Sun, X } from 'lucide-react';
 import SearchBar from './SearchBar';
 import AddBookModal from './AddBookModal';
 import { useStore } from '../context/StoreContext';
@@ -124,6 +124,14 @@ export default function Navbar() {
                 >
                   <Plus size={16} /> Add book
                 </button>
+              )}
+              {!isAdmin && !isUser && (
+                <Link
+                  to="/admin"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-brand-500 hover:bg-brand-600 text-white px-4 h-9 text-sm font-semibold shadow-lg shadow-brand-500/30 neon-glow"
+                >
+                  <Shield size={16} /> Admin
+                </Link>
               )}
               {(isAdmin || isUser) && (
                 <button
