@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { BookOpen, Heart, LayoutDashboard, LayoutGrid, LineChart, LogOut, Menu, Moon, Plus, Shield, ShieldCheck, ShoppingCart, Sun, X } from 'lucide-react';
+import { BookOpen, Heart, LayoutDashboard, LayoutGrid, LineChart, LogOut, Menu, Moon, Plus, ShoppingCart, Sun, X } from 'lucide-react';
 import SearchBar from './SearchBar';
-import AdminAuthModal from './AdminAuthModal';
 import AddBookModal from './AddBookModal';
 import { useStore } from '../context/StoreContext';
 import { useAdmin } from '../context/AdminContext';
@@ -26,7 +25,6 @@ export default function Navbar() {
   const genres = liveGenres.length ? liveGenres : seedGenres;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [catOpen, setCatOpen] = useState(false);
-  const [adminOpen, setAdminOpen] = useState(false);
   const [addBookOpen, setAddBookOpen] = useState(false);
 
   return (
@@ -125,28 +123,6 @@ export default function Navbar() {
                   className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-brand-500 text-white px-3 h-9 text-sm font-semibold shadow-lg shadow-brand-500/30 hover:bg-brand-600"
                 >
                   <Plus size={16} /> Add book
-                </button>
-              )}
-              {!isAdmin && !isUser && (
-                <button
-                  onClick={() => setAdminOpen(true)}
-                  className="inline-flex items-center gap-1.5 rounded-full bg-brand-500 hover:bg-brand-600 text-white px-4 h-9 text-sm font-semibold shadow-lg shadow-brand-500/30 neon-glow"
-                >
-                  <Shield size={16} /> Admin
-                </button>
-              )}
-              {(isAdmin || isUser) && (
-                <button
-                  onClick={() => setAdminOpen(true)}
-                  className={classNames(
-                    'inline-flex items-center gap-1.5 rounded-full px-3 h-9 text-sm font-semibold transition-colors',
-                    isAdmin
-                      ? 'bg-brand-500 text-white shadow-lg shadow-brand-500/30'
-                      : 'bg-black/5 dark:bg-white/10 hover:bg-brand-100 dark:hover:bg-brand-500/20'
-                  )}
-                >
-                  {isAdmin ? <ShieldCheck size={16} /> : <Shield size={16} />}
-                  <span className="hidden sm:inline">Admin</span>
                 </button>
               )}
               {(isAdmin || isUser) && (
@@ -253,9 +229,6 @@ export default function Navbar() {
               <Link to="/tracker" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2 text-sm hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-1">
                 <LineChart size={14} /> Tracker
               </Link>
-              <button onClick={() => { setMobileOpen(false); setAdminOpen(true); }} className={classNames('rounded-lg px-3 py-2 text-sm flex items-center gap-1', isAdmin ? 'bg-brand-500 text-white' : 'hover:bg-black/5 dark:hover:bg-white/5')}>
-                {isAdmin ? <ShieldCheck size={14} /> : <Shield size={14} />} {isAdmin ? 'Admin (on)' : 'Admin'}
-              </button>
               {isAdmin && (
                 <Link to="/admin" onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2 text-sm flex items-center gap-1 bg-ink-900 text-white">
                   <LayoutDashboard size={14} /> Dashboard
@@ -270,7 +243,6 @@ export default function Navbar() {
           </motion.nav>
         )}
       </AnimatePresence>
-      <AdminAuthModal open={adminOpen} onClose={() => setAdminOpen(false)} />
       <AddBookModal open={addBookOpen} onClose={() => setAddBookOpen(false)} />
     </header>
   );

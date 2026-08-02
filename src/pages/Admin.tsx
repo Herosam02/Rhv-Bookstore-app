@@ -4,12 +4,12 @@ import {
   BookCopy, BookPlus, CheckCircle2, DollarSign, LayoutDashboard,
   Loader2, LogOut, Pencil, Save, Search, Settings2, ShoppingCart, Trash2, TrendingUp, Upload, ShieldCheck,
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import { useBooks } from '../context/BooksContext';
 import { useAdmin } from '../context/AdminContext';
 import { useStore } from '../context/StoreContext';
 import type { Book } from '../types';
 import AddBookModal from '../components/AddBookModal';
+import AdminAuthModal from '../components/AdminAuthModal';
 import { classNames, formatPrice } from '../utils/format';
 
 type Tab = 'overview' | 'books' | 'orders' | 'settings';
@@ -18,18 +18,18 @@ export default function Admin() {
   const { isAdmin, ready, signOut, currency, setCurrency } = useAdmin();
   const { books, deleteBook } = useBooks();
   const { notify, orders } = useStore();
-  const navigate = useNavigate();
   const [tab, setTab] = useState<Tab>('overview');
   const [addOpen, setAddOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [showAuth, setShowAuth] = useState(false);
 
   useEffect(() => {
     if (ready && !isAdmin) {
-      navigate('/', { replace: true });
+      setShowAuth(true);
     }
-  }, [ready, isAdmin, navigate]);
+  }, [ready, isAdmin]);
 
   if (!ready || !isAdmin) {
     return (
@@ -38,6 +38,7 @@ export default function Admin() {
           <Loader2 size={40} className="mx-auto animate-spin text-brand-500" />
           <p className="mt-3 text-sm text-ink-500/70 dark:text-ink-100/60">Loading admin panel...</p>
         </div>
+        <AdminAuthModal open={showAuth} onClose={() => setShowAuth(false)} />
       </div>
     );
   }
