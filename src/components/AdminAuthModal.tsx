@@ -31,6 +31,12 @@ export default function AdminAuthModal({ open, onClose }: { open: boolean; onClo
     }
   }, [open]);
 
+  useEffect(() => {
+    if (isAdmin) {
+      onClose();
+    }
+  }, [isAdmin, onClose]);
+
   const submitLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -43,7 +49,6 @@ export default function AdminAuthModal({ open, onClose }: { open: boolean; onClo
     }
     setEmail('');
     setPassword('');
-    onClose();
   };
 
   const submitForgot = async (e: React.FormEvent) => {

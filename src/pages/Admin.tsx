@@ -31,12 +31,28 @@ export default function Admin() {
     }
   }, [ready, isAdmin]);
 
+  useEffect(() => {
+    if (isAdmin) {
+      setShowAuth(false);
+    }
+  }, [isAdmin]);
+
   if (!ready || !isAdmin) {
     return (
       <div className="grid place-items-center min-h-[70vh]">
         <div className="text-center">
-          <Loader2 size={40} className="mx-auto animate-spin text-brand-500" />
-          <p className="mt-3 text-sm text-ink-500/70 dark:text-ink-100/60">Loading admin panel...</p>
+          {!ready ? (
+            <>
+              <Loader2 size={40} className="mx-auto animate-spin text-brand-500" />
+              <p className="mt-3 text-sm text-ink-500/70 dark:text-ink-100/60">Loading admin panel...</p>
+            </>
+          ) : (
+            <>
+              <ShieldCheck size={48} className="mx-auto text-brand-500 mb-4" />
+              <h1 className="font-display text-2xl font-bold">Admin Access Required</h1>
+              <p className="mt-2 text-sm text-ink-500/70 dark:text-ink-100/60">Please sign in with admin credentials to access this page.</p>
+            </>
+          )}
         </div>
         <AdminAuthModal open={showAuth} onClose={() => setShowAuth(false)} />
       </div>
