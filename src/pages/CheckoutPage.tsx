@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Loader2, CreditCard, MapPin, CheckCircle2, Lock } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { useAdmin } from '../context/AdminContext';
-import AdminAuthModal from '../components/AdminAuthModal';
+import UserAuthModal from '../components/UserAuthModal';
 import { formatPrice } from '../utils/format';
 
 export default function CheckoutPage() {
@@ -40,7 +40,7 @@ export default function CheckoutPage() {
         >
           Sign in
         </button>
-        <AdminAuthModal open={showSignIn} onClose={() => setShowSignIn(false)} />
+        <UserAuthModal open={showSignIn} onClose={() => setShowSignIn(false)} />
       </div>
     );
   }

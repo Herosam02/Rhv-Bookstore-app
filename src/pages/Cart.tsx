@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, Minus, Plus, ShoppingBag, Trash2, CreditCard, Lock } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { useAdmin } from '../context/AdminContext';
-import AdminAuthModal from '../components/AdminAuthModal';
+import UserAuthModal from '../components/UserAuthModal';
 import { formatPrice } from '../utils/format';
 
 export default function Cart() {
@@ -105,7 +105,7 @@ export default function Cart() {
           </button>
         </aside>
 
-        <AdminAuthModal open={showSignIn} onClose={() => setShowSignIn(false)} />
+        <UserAuthModal open={showSignIn} onClose={() => setShowSignIn(false)} />
       </div>
     </div>
   );
